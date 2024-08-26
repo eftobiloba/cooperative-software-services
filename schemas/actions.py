@@ -13,7 +13,6 @@ def action_serial(action: Action) -> dict:
         "subactions": [subaction.dict() for subaction in action.subactions],
         "developer_id": action.developer_id,
         "society_id": action.society_id if action.society_id else [],
-        "requires_input": action.requires_input,
     }
 
 def list_actions_serial(actions) -> list:

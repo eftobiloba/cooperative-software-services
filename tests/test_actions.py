@@ -59,7 +59,3 @@ async def backup_data(request: WithdrawalInfo):
             raise HTTPException(status_code=400, detail="Backup failed")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# Register the router with the main application
-# app.include_router(router)

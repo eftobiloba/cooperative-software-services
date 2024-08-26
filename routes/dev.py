@@ -1,15 +1,17 @@
 from typing import Annotated, List
 from bson import ObjectId
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from models.admins import Admin
 from models.devs import Developer
 from models.savings import SavingsTransaction
+from models.members import Member
 from modules.security import passwordSSH
-from config.database import dev_collection, actions_collection, forms_collection, savings_transactions_collection
+from config.database import *
 from models.forms import Action, Form, FormInDB, form_helper
 from schemas.developers import *
 from schemas.actions import *
 from schemas.societies import admin_serial
+from schemas.members import *
 from schemas.transactions import savings_transaction_serial, list_savings_transaction_serial
 
 dev_router = APIRouter()
@@ -165,5 +167,67 @@ async def update_transactions(access_token: str, transaction_id: str, transactio
             return {"code": "00", "message": "success", "data": "Transaction successfully updated"}
         else:
             return {"code": "01", "message": "failure", "data": "Transaction not found"}
+    else:
+        return {"code": "99", "message": "failure", "error": "Not authenticated"}
+    
+@dev_router.get("/admins/{username}")
+async def get_admin(username: str):
+    admin = admin_collection.find_one({"username": username})
+    return admin
+
+# Add new member to the db
+@dev_router.post("/{access_token}/members/", status_code=status.HTTP_201_CREATED)
+async def create_member(access_token: str, member: Member):
+    if (verify_access_token(access_token)):
+        if member_collection.find_one({"cooperative_info.membership_no": member.cooperative_info.membership_no}):
+            raise HTTPException(status_code=400, detail="Member with this membership number already exists.")
+        member_collection.insert_one(member.dict())
+        return {"code": "00", "message": "success", "data": "Member successfully added"}
+    else:
+        return {"code": "99", "message": "failure", "error": "Not authenticated"}
+
+# Retrieve a member by ID
+@dev_router.get("/{access_token}/members/{member_id}", response_model=Member)
+async def get_member(access_token: str, member_id: str):
+    if (verify_access_token(access_token)):
+        member = member_collection.find_one({"_id": ObjectId(member_id)})
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found.")
+        return {"code": "00", "message": "success", "data": member}
+    else:
+        return {"code": "99", "message": "failure", "error": "Not authenticated"}
+
+# Retrieve all members
+@dev_router.get("/{access_token}/members/{society_id}/", response_model=List[Member])
+async def get_all_members(access_token: str, society_id: str):
+    if (verify_access_token(access_token)):
+        members = member_collection.find({"cooperative_info.society_id": society_id})
+        return [list_member_serial(members)]
+    else:
+        return {"code": "99", "message": "failure", "error": "Not authenticated"}
+
+# Update a member
+@dev_router.put("/{access_token}/members/{member_id}", response_model=Member)
+async def update_member(access_token: str, member_id: str, updated_member: Member):
+    if (verify_access_token(access_token)):
+        member = member_collection.find_one({"_id": ObjectId(member_id)})
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found.")
+        
+        updated_member_dict = updated_member.dict(exclude_unset=True)
+        member_collection.update_one({"_id": ObjectId(member_id)}, {"$set": updated_member_dict})
+        return {"code": "00", "message": "success", "data": "Member successfully deleted"}
+    else:
+        return {"code": "99", "message": "failure", "error": "Not authenticated"}
+
+# Delete a member
+@dev_router.delete("/{access_token}/members/{member_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_member(access_token: str, member_id: str):
+    if (verify_access_token(access_token)):
+        member = member_collection.find_one({"_id": ObjectId(member_id)})
+        if not member:
+            raise HTTPException(status_code=404, detail="Member not found.")
+        member_collection.delete_one({"_id": ObjectId(member_id)})
+        {"code": "00", "message": "success", "data": "Member successfully deleted"}
     else:
         return {"code": "99", "message": "failure", "error": "Not authenticated"}
