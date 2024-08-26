@@ -5,13 +5,11 @@ from typing import Optional
 
 class LoanTransaction(BaseModel):
     membership_no: Optional[str] = None
-    non_member_id: Optional[str] = None
     email: Optional[str] = None
     transref: str
     product_id: str
     society_id: str
     timestamp: datetime
-    calculation_method: str
     loantype: str
     interest: float
     amount: float

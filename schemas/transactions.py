@@ -4,6 +4,7 @@ from models.repayments import *
 
 def savings_transaction_serial(transaction: SavingsTransaction) -> dict:
     return {
+        "id": str(transaction["_id"]),
         "membership_no": transaction.membership_no,
         "email": transaction.email,
         "transref": transaction.transref,
@@ -49,14 +50,13 @@ def list_savings_balance_serial(balances: list) -> list:
 # --------------------- LOANS ----------------------
 def loan_transaction_serial(transaction: LoanTransaction) -> dict:
     return {
+        "id": str(transaction["_id"]),
         "membership_no": transaction.membership_no if transaction.membership_no else None,
-        "non_member_id": transaction.non_member_id if transaction.non_member_id else None,
         "email": transaction.email,
         "transref": transaction.transref,
         "product_id": transaction.product_id,
         "society_id": transaction.society_id,
         "timestamp": transaction.timestamp.isoformat(),
-        "calculation_method": transaction.calculation_method,
         "loantype": transaction.loantype,
         "interest": transaction.interest,
         "amount": transaction.amount,

@@ -20,10 +20,10 @@ def society_serial(society: Society) -> dict:
     return{
         "society_id": society["society_id"],
         "society_name": society["society_name"],
-        "staff_number": society["staff_number"],
         "address": society["address"],
-        "member_number": society["member_number"],
         "payment_plan": society["payment_plan"],
+        "forms": society["forms"] if society["forms"] else [],
+        "actions": society["actions"] if society["actions"] else [],
     }
 
 def list_society_serial(societies) -> list:

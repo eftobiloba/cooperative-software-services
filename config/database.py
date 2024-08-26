@@ -20,7 +20,8 @@ balance_collection = db["balance_collection"]
 repayments_collection = db["repayments_collection"]
 forms_collection = db["forms_collection"]
 form_submissions_collection = db["form_submissions_collection"]
-form_actions_collection = db["form_actions_collection"]
+actions_collection = db["actions_collection"]
+dev_collection = db["dev_collection"]
 
 member_collection.create_index('membership_no', unique=True)
 society_collection.create_index('society_id', unique=True)

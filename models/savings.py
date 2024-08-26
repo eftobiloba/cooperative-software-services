@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 class SavingsTransaction(BaseModel):
     membership_no: str
@@ -22,8 +22,6 @@ class SavingsProduct(BaseModel):
     society_id: str
     minimum_saveable: float
     minimum_untouchable: float
-    interest_return: float
-    required_info: List[str]
 
 class SavingsBalance(BaseModel):
     membership_no: str

@@ -1,0 +1,1 @@
+{'name': 'Tobiloba', 'membership_no': 'test', 'amount': 10000.0, 'account_no': '1001001001', 'bank_name': 'TobiBank'}
